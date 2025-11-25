@@ -1,0 +1,108 @@
+openapi: 3.0.0
+info:
+  title: Parking Slot Reservation System API
+  version: 1.0.0
+  description: API for managing parking slots, reservations, and payments.
+servers:
+  - url: http://localhost:5001/api
+    description: Local Development Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                phoneNumber:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+
+  /auth/login:
+    post:
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful (returns token)
+
+  /slots:
+    get:
+      summary: Get all parking slots
+      parameters:
+        - in: query
+          name: startDateTime
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: endDateTime
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of slots
+
+  /reservations:
+    post:
+      summary: Create a reservation
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slotId:
+                  type: string
+                startDateTime:
+                  type: string
+                  format: date-time
+                endDateTime:
+                  type: string
+                  format: date-time
+                vehicleNumber:
+                  type: string
+      responses:
+        '201':
+          description: Reservation created
+
+    get:
+      summary: Get user reservations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of reservations
